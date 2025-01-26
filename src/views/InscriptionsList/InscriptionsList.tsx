@@ -23,7 +23,6 @@ export const InscriptionsList: React.FC = () => {
       return;
     }
 
-    // Check cache first
     if (isInitialLoad && cachedInscriptions[address]) {
       const cachedResults = cachedInscriptions[address].utxos;
       setUtxos(cachedResults);
@@ -46,17 +45,14 @@ export const InscriptionsList: React.FC = () => {
         utxosWithInscriptions: newResults.filter(utxo => utxo.inscriptions?.length > 0).length
       });
       
-      // Filter out UTXOs without inscriptions
       const utxosWithInscriptions = newResults.filter(utxo => utxo.inscriptions?.length > 0);
       
       if (utxosWithInscriptions.length === 0 && !isInitialLoad) {
-        // If no new inscriptions found and not initial load, try next batch
         offsetRef.current += newResults.length;
         setHasMore(offsetRef.current < response.total);
         loadingRef.current = false;
         setLoading(false);
         
-        // Immediately trigger next load if we have more to load
         if (offsetRef.current < response.total) {
           loadInscriptions(false);
         }
@@ -65,7 +61,6 @@ export const InscriptionsList: React.FC = () => {
       
       if (isInitialLoad) {
         setUtxos(utxosWithInscriptions);
-        // Cache initial results
         setCachedInscriptions(address, { 
           utxos: utxosWithInscriptions, 
           total: response.total 
@@ -118,7 +113,6 @@ export const InscriptionsList: React.FC = () => {
     navigate(`/inscription/${address}/${inscription.id}`);
   };
 
-  // Flatten UTXO inscriptions into a single list
   const inscriptionsList = utxos.flatMap(utxo => 
     (utxo.inscriptions || []).map(inscription => ({
       id: inscription.id,
