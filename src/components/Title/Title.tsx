@@ -10,18 +10,6 @@ interface TitleProps {
   variant?: TitleVariant;
 }
 
-export const Title: React.FC<TitleProps> = ({ 
-  children, 
-  className = '',
-  variant = 'title'
-}) => {
-  return (
-    <div className={classNames(
-      styles.root,
-      styles[variant],
-      className
-    )}>
-      {children}
-    </div>
-  );
-}; 
+export const Title: React.FC<TitleProps> = ({ children, className = '', variant = 'title' }) => {
+  return <div className={classNames(styles.root, styles[variant], className)}>{children}</div>;
+};

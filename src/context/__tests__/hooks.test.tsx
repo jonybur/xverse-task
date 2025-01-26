@@ -7,12 +7,14 @@ describe('useInscriptions', () => {
   const mockContextValue: InscriptionsContextType = {
     cachedInscriptions: {},
     setCachedInscriptions: jest.fn(),
-    clearCache: jest.fn()
+    clearCache: jest.fn(),
   };
 
   it('should throw error when used outside provider', () => {
     const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
-    expect(() => renderHook(() => useInscriptions())).toThrow('useInscriptions must be used within an InscriptionsProvider');
+    expect(() => renderHook(() => useInscriptions())).toThrow(
+      'useInscriptions must be used within an InscriptionsProvider'
+    );
     consoleError.mockRestore();
   });
 
@@ -26,4 +28,4 @@ describe('useInscriptions', () => {
     const { result } = renderHook(() => useInscriptions(), { wrapper });
     expect(result.current).toBe(mockContextValue);
   });
-}); 
+});

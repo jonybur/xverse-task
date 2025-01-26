@@ -44,4 +44,4 @@ export interface InscriptionDetails {
   collection_id: string | null;
   collection_name: string | null;
   inscription_floor_price: number;
-} 
+}

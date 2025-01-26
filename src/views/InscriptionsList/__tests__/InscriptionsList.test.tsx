@@ -19,14 +19,16 @@ afterAll(() => {
 
 // Mock the API module
 jest.mock('../../../services/api');
-const mockedGetAddressOrdinals = getAddressOrdinals as jest.MockedFunction<typeof getAddressOrdinals>;
+const mockedGetAddressOrdinals = getAddressOrdinals as jest.MockedFunction<
+  typeof getAddressOrdinals
+>;
 
 // Mock the hooks
 jest.mock('../../../context/hooks', () => ({
   useInscriptions: () => ({
     cachedInscriptions: {},
-    setCachedInscriptions: jest.fn()
-  })
+    setCachedInscriptions: jest.fn(),
+  }),
 }));
 
 // Mock ResizeObserver
@@ -39,10 +41,23 @@ window.ResizeObserver = mockResizeObserver;
 
 // Mock AutoSizer
 jest.mock('react-virtualized', () => {
-  const AutoSizer = ({ children }: { children: ({ width, height }: { width: number; height: number }) => React.ReactNode }) => 
-    children({ width: 1000, height: 1000 });
-    
-  const List = ({ rowRenderer, rowCount }: { rowRenderer: (props: { index: number; key: string; style: React.CSSProperties }) => React.ReactNode; rowCount: number }) => {
+  const AutoSizer = ({
+    children,
+  }: {
+    children: ({ width, height }: { width: number; height: number }) => React.ReactNode;
+  }) => children({ width: 1000, height: 1000 });
+
+  const List = ({
+    rowRenderer,
+    rowCount,
+  }: {
+    rowRenderer: (props: {
+      index: number;
+      key: string;
+      style: React.CSSProperties;
+    }) => React.ReactNode;
+    rowCount: number;
+  }) => {
     const items = [];
     for (let i = 0; i < rowCount; i++) {
       items.push(rowRenderer({ index: i, key: `row_${i}`, style: {} }));
@@ -59,24 +74,22 @@ const mockUtxos: UTXO[] = [
     value: 1000,
     inscriptions: [
       { id: 'inscription1', content_type: 'text/plain', offset: 0 },
-      { id: 'inscription2', content_type: 'text/plain', offset: 0 }
-    ]
+      { id: 'inscription2', content_type: 'text/plain', offset: 0 },
+    ],
   },
   {
     txid: 'tx2',
     vout: 1,
     value: 2000,
-    inscriptions: [
-      { id: 'inscription3', content_type: 'text/plain', offset: 0 }
-    ]
-  }
+    inscriptions: [{ id: 'inscription3', content_type: 'text/plain', offset: 0 }],
+  },
 ];
 
 const createMockResponse = (results: UTXO[], total = results.length): UTXOResponse => ({
   limit: 20,
   offset: 0,
   total,
-  results
+  results,
 });
 
 const renderInscriptionsList = (address: string = 'testAddress') => {
@@ -100,7 +113,7 @@ describe('InscriptionsList', () => {
 
   it('should fetch inscriptions on initial load', async () => {
     mockedGetAddressOrdinals.mockResolvedValueOnce(createMockResponse(mockUtxos));
-    
+
     await act(async () => {
       renderInscriptionsList();
     });
@@ -113,7 +126,7 @@ describe('InscriptionsList', () => {
   it('should use cached inscriptions when available', async () => {
     const mockResponse = createMockResponse(mockUtxos);
     mockedGetAddressOrdinals.mockResolvedValueOnce(mockResponse);
-    
+
     await act(async () => {
       renderInscriptionsList();
     });
@@ -161,4 +174,4 @@ describe('InscriptionsList', () => {
       expect(mockedGetAddressOrdinals).toHaveBeenCalledWith('testAddress', 0);
     });
   });
-}); 
+});

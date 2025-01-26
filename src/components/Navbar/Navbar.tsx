@@ -18,12 +18,7 @@ export const Navbar: React.FC<NavbarProps> = ({ title, showBackButton }) => {
   return (
     <nav className={styles.navbar}>
       {showBackButton && (
-        <img 
-          src={backIcon} 
-          className={styles.backIcon} 
-          onClick={handleBack}
-          alt="back"
-        />
+        <img src={backIcon} className={styles.backIcon} onClick={handleBack} alt="back" />
       )}
       {title && <h1 className={styles.title}>{title}</h1>}
     </nav>

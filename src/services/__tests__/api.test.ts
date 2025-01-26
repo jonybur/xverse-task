@@ -15,7 +15,7 @@ describe('API Service', () => {
       limit: 30,
       offset: 0,
       total: 0,
-      results: []
+      results: [],
     };
 
     it('should fetch ordinals for an address with default parameters', async () => {
@@ -69,7 +69,7 @@ describe('API Service', () => {
       category: null,
       collection_id: null,
       collection_name: null,
-      inscription_floor_price: 0
+      inscription_floor_price: 0,
     };
 
     it('should fetch inscription details', async () => {
@@ -84,7 +84,9 @@ describe('API Service', () => {
     it('should handle API errors', async () => {
       const error = new Error('Network error');
       mockedAxios.get.mockRejectedValueOnce(error);
-      await expect(getInscriptionDetails('test-address', 'test-inscription')).rejects.toThrow('Network error');
+      await expect(getInscriptionDetails('test-address', 'test-inscription')).rejects.toThrow(
+        'Network error'
+      );
     });
   });
-}); 
+});

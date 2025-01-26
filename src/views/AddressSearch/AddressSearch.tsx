@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Input } from '../../components'
+import { Button, Input } from '../../components';
 import styles from './AddressSearch.module.scss';
 export const AddressSearch: React.FC = () => {
   const [address, setAddress] = useState('');
@@ -20,9 +20,9 @@ export const AddressSearch: React.FC = () => {
         type="text"
         value={address}
         label="Owner Bitcoin Address:"
-        onChange={(e) => setAddress(e.target.value)}
+        onChange={e => setAddress(e.target.value)}
       />
       <Button type="submit">Look up</Button>
     </form>
   );
-}; 
+};

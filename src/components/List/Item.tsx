@@ -9,18 +9,11 @@ interface ItemProps {
   onClick?: () => void;
 }
 
-export const Item: React.FC<ItemProps> = ({
-  text,
-  className = '',
-  onClick
-}) => {
+export const Item: React.FC<ItemProps> = ({ text, className = '', onClick }) => {
   return (
-    <div 
-      className={classNames(styles.item, className)}
-      onClick={onClick}
-    >
+    <div className={classNames(styles.item, className)} onClick={onClick}>
       <span className={styles.itemText}>{text}</span>
       <img src={forwardIcon} className={styles.itemIcon} alt="forward" />
     </div>
   );
-}; 
+};

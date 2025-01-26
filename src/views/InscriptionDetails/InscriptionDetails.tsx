@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { getInscriptionDetails } from "../../services/api";
-import { InscriptionDetails as IInscriptionDetails } from "../../types/types";
-import { Title, Field } from "../../components";
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { getInscriptionDetails } from '../../services/api';
+import { InscriptionDetails as IInscriptionDetails } from '../../types/types';
+import { Title, Field } from '../../components';
 import styles from './InscriptionDetails.module.scss';
 
 const isValueEmpty = (value: string | number | null | undefined): boolean => {
@@ -23,7 +23,7 @@ const formatTitle = (key: string): string => {
 
 const formatValue = (key: string, value: string | number | null | undefined): string => {
   if (value === null || value === undefined) return '';
-  
+
   switch (key) {
     case 'content_length':
       return `${toString(value)} bytes`;
@@ -56,7 +56,7 @@ export const InscriptionDetails: React.FC = () => {
         const response = await getInscriptionDetails(address, inscriptionId);
         setDetails(response);
       } catch (error) {
-        console.error("Error loading inscription details:", error);
+        console.error('Error loading inscription details:', error);
       }
       setLoading(false);
     };
@@ -71,32 +71,23 @@ export const InscriptionDetails: React.FC = () => {
 
   return (
     <div>
-      {details.content_type && (
-        details.content_type.startsWith("image/svg") ? (
+      {details.content_type &&
+        (details.content_type.startsWith('image/svg') ? (
           <iframe src={contentUrl} title="Inscription content" className={styles.contentImage} />
-        ) : details.content_type.startsWith("image/") ? (
+        ) : details.content_type.startsWith('image/') ? (
           <img src={contentUrl} alt="Inscription content" className={styles.contentImage} />
         ) : (
           <iframe src={contentUrl} title="Inscription content" className={styles.contentImage} />
-        )
-      )}
+        ))}
       <Title variant="title">Inscription {inscriptionId?.slice(0, 8)}</Title>
-      
+
       <div className={styles.fields}>
-        <Field 
-          title="Inscription ID" 
-          value={toString(details.id)} 
-          variant="primary"
-        />
-        <Field 
-          title="Owner Address" 
-          value={toString(address)} 
-          variant="primary"
-        />
+        <Field title="Inscription ID" value={toString(details.id)} variant="primary" />
+        <Field title="Owner Address" value={toString(address)} variant="primary" />
       </div>
       <div className={styles.fields}>
         <Title variant="subtitle">Attributes</Title>
-        
+
         {Object.entries(details).map(([key, value]) => {
           if (!['id', 'address'].includes(key) && !isValueEmpty(value)) {
             return (

@@ -3,7 +3,7 @@
   font-family: 'Montserrat';
   font-style: normal;
   width: 100%;
-  
+
   .title {
     font-weight: 500;
     font-size: 12px;
@@ -15,7 +15,7 @@
   .value {
     font-weight: 500;
     font-size: 14px;
-    color: #FFFFFF;
+    color: #ffffff;
     word-wrap: break-word;
     overflow-wrap: break-word;
   }
@@ -28,11 +28,11 @@
 
   &.secondary {
     .value {
-      background: #24252C;
+      background: #24252c;
       border-radius: 8px;
       padding: 12px;
       line-height: 17px;
       margin-top: 8px;
     }
   }
-} 
+}

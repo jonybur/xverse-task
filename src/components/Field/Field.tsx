@@ -8,11 +8,7 @@ interface FieldProps {
   variant?: 'primary' | 'secondary';
 }
 
-export const Field: FC<FieldProps> = ({ 
-  title, 
-  value, 
-  variant = 'primary' 
-}) => {
+export const Field: FC<FieldProps> = ({ title, value, variant = 'primary' }) => {
   return (
     <div className={classNames(styles.field, styles[variant])}>
       <div className={styles.title}>{title}</div>

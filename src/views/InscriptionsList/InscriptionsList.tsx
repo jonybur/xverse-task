@@ -18,74 +18,77 @@ export const InscriptionsList: React.FC = () => {
   const offsetRef = useRef(0);
   const { cachedInscriptions, setCachedInscriptions } = useInscriptions();
 
-  const loadInscriptions = useCallback(async (isInitialLoad: boolean = false) => {
-    if (!address || loadingRef.current) {
-      return;
-    }
-
-    if (isInitialLoad && cachedInscriptions[address]) {
-      const cachedResults = cachedInscriptions[address].utxos;
-      setUtxos(cachedResults);
-      offsetRef.current = cachedResults.length;
-      setHasMore(cachedResults.length < cachedInscriptions[address].total);
-      return;
-    }
-    
-    loadingRef.current = true;
-    setLoading(true);
-    
-    try {
-      console.log('Current offset:', offsetRef.current);
-      const response = await getAddressOrdinals(address, offsetRef.current);
-      const newResults = response.results;
-      console.log('Response:', {
-        total: response.total,
-        resultsLength: newResults.length,
-        results: newResults,
-        utxosWithInscriptions: newResults.filter(utxo => utxo.inscriptions?.length > 0).length
-      });
-      
-      const utxosWithInscriptions = newResults.filter(utxo => utxo.inscriptions?.length > 0);
-      
-      if (utxosWithInscriptions.length === 0 && !isInitialLoad) {
-        offsetRef.current += newResults.length;
-        setHasMore(offsetRef.current < response.total);
-        loadingRef.current = false;
-        setLoading(false);
-        
-        if (offsetRef.current < response.total) {
-          loadInscriptions(false);
-        }
+  const loadInscriptions = useCallback(
+    async (isInitialLoad: boolean = false) => {
+      if (!address || loadingRef.current) {
         return;
       }
-      
-      if (isInitialLoad) {
-        setUtxos(utxosWithInscriptions);
-        setCachedInscriptions(address, { 
-          utxos: utxosWithInscriptions, 
-          total: response.total 
+
+      if (isInitialLoad && cachedInscriptions[address]) {
+        const cachedResults = cachedInscriptions[address].utxos;
+        setUtxos(cachedResults);
+        offsetRef.current = cachedResults.length;
+        setHasMore(cachedResults.length < cachedInscriptions[address].total);
+        return;
+      }
+
+      loadingRef.current = true;
+      setLoading(true);
+
+      try {
+        console.log('Current offset:', offsetRef.current);
+        const response = await getAddressOrdinals(address, offsetRef.current);
+        const newResults = response.results;
+        console.log('Response:', {
+          total: response.total,
+          resultsLength: newResults.length,
+          results: newResults,
+          utxosWithInscriptions: newResults.filter(utxo => utxo.inscriptions?.length > 0).length,
         });
-      } else {
-        setUtxos(prev => [...prev, ...utxosWithInscriptions]);
+
+        const utxosWithInscriptions = newResults.filter(utxo => utxo.inscriptions?.length > 0);
+
+        if (utxosWithInscriptions.length === 0 && !isInitialLoad) {
+          offsetRef.current += newResults.length;
+          setHasMore(offsetRef.current < response.total);
+          loadingRef.current = false;
+          setLoading(false);
+
+          if (offsetRef.current < response.total) {
+            loadInscriptions(false);
+          }
+          return;
+        }
+
+        if (isInitialLoad) {
+          setUtxos(utxosWithInscriptions);
+          setCachedInscriptions(address, {
+            utxos: utxosWithInscriptions,
+            total: response.total,
+          });
+        } else {
+          setUtxos(prev => [...prev, ...utxosWithInscriptions]);
+        }
+
+        offsetRef.current += newResults.length;
+        console.log('New offset:', offsetRef.current);
+        setHasMore(offsetRef.current < response.total);
+        setError(null);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Failed to load inscriptions';
+        setError(message);
+        if (isInitialLoad) {
+          setUtxos([]);
+          offsetRef.current = 0;
+        }
+        console.error('Failed to load inscriptions:', message);
       }
-      
-      offsetRef.current += newResults.length;
-      console.log('New offset:', offsetRef.current);
-      setHasMore(offsetRef.current < response.total);
-      setError(null);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to load inscriptions';
-      setError(message);
-      if (isInitialLoad) {
-        setUtxos([]);
-        offsetRef.current = 0;
-      }
-      console.error('Failed to load inscriptions:', message);
-    }
-    
-    setLoading(false);
-    loadingRef.current = false;
-  }, [address, cachedInscriptions, setCachedInscriptions]);
+
+      setLoading(false);
+      loadingRef.current = false;
+    },
+    [address, cachedInscriptions, setCachedInscriptions]
+  );
 
   useEffect(() => {
     if (error) return;
@@ -103,10 +106,10 @@ export const InscriptionsList: React.FC = () => {
     navigate(`/inscription/${address}/${inscription.id}`);
   };
 
-  const inscriptionsList = utxos.flatMap(utxo => 
+  const inscriptionsList = utxos.flatMap(utxo =>
     (utxo.inscriptions || []).map(inscription => ({
       id: inscription.id,
-      text: `Inscription ${inscription.id.slice(0, 8)}`
+      text: `Inscription ${inscription.id.slice(0, 8)}`,
     }))
   );
 
@@ -117,7 +120,7 @@ export const InscriptionsList: React.FC = () => {
       <AddressSearch />
       {error ? (
         <div>
-          <Title variant='small'>Error loading inscriptions</Title>
+          <Title variant="small">Error loading inscriptions</Title>
         </div>
       ) : (
         <div className={styles.content}>
@@ -125,14 +128,14 @@ export const InscriptionsList: React.FC = () => {
           <div className={styles.listContainer}>
             {hasInscriptions ? (
               <>
-                <List 
+                <List
                   items={inscriptionsList.map(i => i.text)}
                   onItemClick={handleInscriptionClick}
                 />
                 <div className={styles.loadMoreContainer}>
                   {hasMore && (
-                    <Button 
-                      onClick={handleLoadMore} 
+                    <Button
+                      onClick={handleLoadMore}
                       className={styles.loadMoreButton}
                       disabled={loading}
                     >
@@ -151,4 +154,4 @@ export const InscriptionsList: React.FC = () => {
       )}
     </div>
   );
-}; 
+};

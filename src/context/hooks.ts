@@ -7,4 +7,4 @@ export const useInscriptions = () => {
     throw new Error('useInscriptions must be used within an InscriptionsProvider');
   }
   return context;
-}; 
+};
