@@ -91,9 +91,11 @@ export const InscriptionsList: React.FC = () => {
   );
 
   useEffect(() => {
-    if (error) return;
+    setError(null);
+    offsetRef.current = 0;
+    setUtxos([]);
     loadInscriptions(true);
-  }, [loadInscriptions, error]);
+  }, [address, loadInscriptions]);
 
   const handleLoadMore = () => {
     if (!loading && hasMore) {
