@@ -127,10 +127,7 @@ export const InscriptionsList: React.FC = () => {
       <AddressSearch />
       {error ? (
         <div>
-          <h2>Error</h2>
-          <p>{error}</p>
-          <button onClick={handleRetry}>Try Again</button>
-          <button onClick={handleBack}>Back to Search</button>
+          <Title variant='small'>Error loading inscriptions</Title>
         </div>
       ) : (
         <div className={styles.content}>
