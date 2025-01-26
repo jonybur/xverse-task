@@ -1,0 +1,38 @@
+.field {
+  position: relative;
+  font-family: 'Montserrat';
+  font-style: normal;
+  width: 100%;
+  
+  .title {
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 15px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 8px;
+  }
+
+  .value {
+    font-weight: 500;
+    font-size: 14px;
+    color: #FFFFFF;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  &.primary {
+    .value {
+      line-height: 19px;
+    }
+  }
+
+  &.secondary {
+    .value {
+      background: #24252C;
+      border-radius: 8px;
+      padding: 12px;
+      line-height: 17px;
+      margin-top: 8px;
+    }
+  }
+} 

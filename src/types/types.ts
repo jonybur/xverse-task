@@ -21,10 +21,27 @@ export interface UTXOResponse {
 export interface InscriptionDetails {
   id: string;
   number: number;
+  address: string;
+  genesis_address: string;
+  genesis_block_height: number;
+  genesis_block_hash: string;
+  genesis_tx_id: string;
+  genesis_fee: number;
+  genesis_timestamp: number;
+  location: string;
+  output: string;
+  offset: number;
+  sat_ordinal: number;
+  sat_rarity: string;
+  sat_coinbase_height: number;
+  mime_type: string;
   content_type: string;
   content_length: number;
-  genesis_timestamp: number;
-  genesis_address: string;
+  tx_id: string;
+  timestamp: number;
+  value: number;
+  category: string | null;
+  collection_id: string | null;
   collection_name: string | null;
-  mime_type: string;
+  inscription_floor_price: number;
 } 

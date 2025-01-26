@@ -5,4 +5,12 @@
   display: block;
   margin: 0 auto;
   height: 375px;
+  object-fit: contain;
+}
+  
+.fields {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 24px 16px;
 }
