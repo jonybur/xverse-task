@@ -7,20 +7,21 @@ export const AddressSearch: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (address.trim()) {
-      navigate(`/address/${address}`);
+    const trimmedAddress = address.trim();
+    if (trimmedAddress) {
+      navigate(`/address/${trimmedAddress}`);
     }
   };
 
   return (
     <form onSubmit={handleSubmit}>
+      <span>Owner Bitcoin Address:</span>
       <input
         type="text"
         value={address}
         onChange={(e) => setAddress(e.target.value)}
-        placeholder="Enter Bitcoin Address"
       />
-      <button type="submit">Search</button>
+      <button type="submit">Look up</button>
     </form>
   );
 }; 

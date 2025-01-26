@@ -1,20 +1,32 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AddressSearch } from './components/AddressSearch';
-import { InscriptionsList } from './components/InscriptionsList';
-import { InscriptionDetails } from './components/InscriptionDetails';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { AddressSearch, InscriptionsList, InscriptionDetails } from './views';
+import Navbar from './components/Navbar';
+
+const AppContent: React.FC = () => {
+  const location = useLocation();
+  const showBackButton = location.pathname.startsWith('/inscription/');
+  const getTitle = () => {
+    if (location.pathname.startsWith('/inscription/')) return 'Details';
+    return 'Ordinal Inscription Lookup';
+  };
+
+  return (
+    <div>
+      <Navbar title={getTitle()} showBackButton={showBackButton} />
+      <Routes>
+        <Route path="/" element={<AddressSearch />} />
+        <Route path="/address/:address" element={<InscriptionsList />} />
+        <Route path="/inscription/:address/:inscriptionId" element={<InscriptionDetails />} />
+      </Routes>
+    </div>
+  );
+};
 
 const App: React.FC = () => {
   return (
     <Router>
-      <div>
-        <h1>Bitcoin Ordinals Viewer</h1>
-        <Routes>
-          <Route path="/" element={<AddressSearch />} />
-          <Route path="/address/:address" element={<InscriptionsList />} />
-          <Route path="/inscription/:address/:inscriptionId" element={<InscriptionDetails />} />
-        </Routes>
-      </div>
+      <AppContent />
     </Router>
   );
 };
