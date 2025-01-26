@@ -20,6 +20,8 @@ A React application for exploring Bitcoin Ordinals inscriptions using the Xverse
 - SCSS Modules
 - Axios for API calls
 - React Virtualized for efficient list rendering
+- ESLint & Prettier for code quality
+- Husky & lint-staged for Git hooks
 
 ## Getting Started
 
@@ -58,7 +60,29 @@ npm run build
 
 The build output will be in the `dist` directory.
 
-## Testing
+## Code Quality
+
+### Linting and Formatting
+
+The project uses ESLint and Prettier to maintain code quality and consistent formatting. The following commands are available:
+
+```bash
+# Run ESLint
+npm run lint
+
+# Fix ESLint issues automatically
+npm run lint:fix
+
+# Format code with Prettier
+npm run format
+
+# Check if files are formatted correctly
+npm run format:check
+```
+
+Git hooks (using Husky) are set up to automatically lint and format code before commits.
+
+### Testing
 
 The project includes unit tests for core functionality. To run the tests:
 
@@ -71,6 +95,15 @@ To run tests in watch mode:
 ```bash
 npm run test:watch
 ```
+
+### Continuous Integration
+
+The project uses GitHub Actions for continuous integration. The following checks are run on every push and pull request to the main branch:
+
+- Unit tests on Node.js versions 16.x, 18.x, and 20.x
+- ESLint code quality checks
+
+You can view the status of these checks in the GitHub Actions tab of the repository.
 
 ## Project Structure
 
@@ -90,6 +123,9 @@ src/
 - `npm run build` - Create production build
 - `npm run preview` - Preview production build
 - `npm run lint` - Run ESLint
+- `npm run lint:fix` - Fix ESLint issues
+- `npm run format` - Format code with Prettier
+- `npm run format:check` - Check code formatting
 - `npm test` - Run tests
 - `npm run test:watch` - Run tests in watch mode
 
