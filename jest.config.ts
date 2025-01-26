@@ -5,8 +5,8 @@ const config: Config.InitialOptions = {
   testEnvironment: 'jsdom',
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
   moduleNameMapper: {
-    '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
-    '^@/(.*)$': '<rootDir>/src/$1',
+    '\\.(css|less|scss|sass)$': '<rootDir>/src/__mocks__/styleMock.ts',
+    '\\.module\\.(css|less|scss|sass)$': '<rootDir>/src/__mocks__/styleMock.ts',
     '\\.svg$': '<rootDir>/src/__mocks__/svgMock.ts'
   },
   transform: {

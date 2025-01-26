@@ -20,9 +20,7 @@ describe('API Service', () => {
 
     it('should fetch ordinals for an address with default parameters', async () => {
       mockedAxios.get.mockResolvedValueOnce({ data: mockResponse });
-      
       const result = await getAddressOrdinals('test-address');
-      
       expect(mockedAxios.get).toHaveBeenCalledWith(
         'https://api-3.xverse.app/v1/address/test-address/ordinal-utxo?offset=0&limit=30'
       );
@@ -31,9 +29,7 @@ describe('API Service', () => {
 
     it('should fetch ordinals with custom offset and limit', async () => {
       mockedAxios.get.mockResolvedValueOnce({ data: mockResponse });
-      
       const result = await getAddressOrdinals('test-address', 10, 20);
-      
       expect(mockedAxios.get).toHaveBeenCalledWith(
         'https://api-3.xverse.app/v1/address/test-address/ordinal-utxo?offset=10&limit=20'
       );
@@ -43,7 +39,6 @@ describe('API Service', () => {
     it('should handle API errors', async () => {
       const error = new Error('Network error');
       mockedAxios.get.mockRejectedValueOnce(error);
-      
       await expect(getAddressOrdinals('test-address')).rejects.toThrow('Network error');
     });
   });
@@ -79,9 +74,7 @@ describe('API Service', () => {
 
     it('should fetch inscription details', async () => {
       mockedAxios.get.mockResolvedValueOnce({ data: mockInscriptionDetails });
-      
       const result = await getInscriptionDetails('test-address', 'test-inscription');
-      
       expect(mockedAxios.get).toHaveBeenCalledWith(
         'https://api-3.xverse.app/v1/address/test-address/ordinals/inscriptions/test-inscription'
       );
@@ -91,7 +84,6 @@ describe('API Service', () => {
     it('should handle API errors', async () => {
       const error = new Error('Network error');
       mockedAxios.get.mockRejectedValueOnce(error);
-      
       await expect(getInscriptionDetails('test-address', 'test-inscription')).rejects.toThrow('Network error');
     });
   });
