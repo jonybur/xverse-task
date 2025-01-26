@@ -1,0 +1,27 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 17.07px;
+  color: #fff;
+}
+
+.field {
+  background: #24252C;
+  height: 32px;
+  border: none;
+  border-radius: 4px;
+  padding: 0 12px;
+  color: #fff;
+  outline: none;
+
+  &:focus {
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2);
+  }
+} 

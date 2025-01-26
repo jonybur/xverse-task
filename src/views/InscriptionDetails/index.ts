@@ -1,0 +1,1 @@
+export { InscriptionDetails } from './InscriptionDetails';

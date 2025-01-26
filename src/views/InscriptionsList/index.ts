@@ -1,0 +1,1 @@
+export { InscriptionsList } from './InscriptionsList';

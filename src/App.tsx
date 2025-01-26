@@ -1,8 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AddressSearch, InscriptionsList, InscriptionDetails } from './views';
-import Navbar from './components/Navbar';
-
+import { Navbar } from './components';
+import styles from './App.module.scss';
 const AppContent: React.FC = () => {
   const location = useLocation();
   const showBackButton = location.pathname.startsWith('/inscription/');
@@ -12,7 +12,7 @@ const AppContent: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className={styles.appContainer}>
       <Navbar title={getTitle()} showBackButton={showBackButton} />
       <Routes>
         <Route path="/" element={<AddressSearch />} />

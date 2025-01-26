@@ -1,0 +1,36 @@
+.navbar {
+  height: 88px;
+  width: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.backButton {
+  width: 28px;
+  height: 28px;
+  position: absolute;
+  top: 48px;
+  left: 16px;
+  background: url('../assets/back.svg') no-repeat center;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.title {
+  height: 17px;
+  position: absolute;
+  top: 54px;
+  margin: 0;
+  text-align: center;
+  font-size: 14px;
+  line-height: 17px;
+} 

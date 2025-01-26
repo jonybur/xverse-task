@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { getAddressOrdinals } from '../services/api';
-import { UTXO } from '../types/types';
-import { AddressSearch } from './AddressSearch';
+import { getAddressOrdinals } from '../../services/api';
+import { UTXO } from '../../types/types';
+import { AddressSearch } from '../AddressSearch';
 
 export const InscriptionsList: React.FC = () => {
   const { address } = useParams<{ address: string }>();

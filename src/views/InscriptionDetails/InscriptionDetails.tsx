@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { getInscriptionDetails } from '../services/api';
-import { InscriptionDetails as IInscriptionDetails } from '../types/types';
+import { getInscriptionDetails } from '../../services/api';
+import { InscriptionDetails as IInscriptionDetails } from '../../types/types';
 
 export const InscriptionDetails: React.FC = () => {
   const { address, inscriptionId } = useParams<{ address: string; inscriptionId: string }>();
