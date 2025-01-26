@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { getAddressOrdinals } from '../../services/api';
 import { UTXO } from '../../types/types';
 import { AddressSearch } from '../AddressSearch';
-import { Title, List } from '../../components';
+import { Title, List, Button } from '../../components';
 import { useInscriptions } from '../../context/hooks';
 import styles from './InscriptionsList.module.scss';
 
@@ -12,18 +12,23 @@ export const InscriptionsList: React.FC = () => {
   const [utxos, setUtxos] = useState<UTXO[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(true);
   const navigate = useNavigate();
   const loadingRef = useRef(false);
+  const offsetRef = useRef(0);
   const { cachedInscriptions, setCachedInscriptions } = useInscriptions();
 
-  const loadInscriptions = useCallback(async () => {
+  const loadInscriptions = useCallback(async (isInitialLoad: boolean = false) => {
     if (!address || loadingRef.current) {
       return;
     }
 
     // Check cache first
-    if (cachedInscriptions[address]) {
-      setUtxos(cachedInscriptions[address].utxos);
+    if (isInitialLoad && cachedInscriptions[address]) {
+      const cachedResults = cachedInscriptions[address].utxos;
+      setUtxos(cachedResults);
+      offsetRef.current = cachedResults.length;
+      setHasMore(cachedResults.length < cachedInscriptions[address].total);
       return;
     }
     
@@ -31,27 +36,55 @@ export const InscriptionsList: React.FC = () => {
     setLoading(true);
     
     try {
-      // Load all UTXOs recursively
-      let allUtxos: UTXO[] = [];
-      let offset = 0;
-      let total = 0;
+      console.log('Current offset:', offsetRef.current);
+      const response = await getAddressOrdinals(address, offsetRef.current);
+      const newResults = response.results;
+      console.log('Response:', {
+        total: response.total,
+        resultsLength: newResults.length,
+        results: newResults,
+        utxosWithInscriptions: newResults.filter(utxo => utxo.inscriptions?.length > 0).length
+      });
       
-      do {
-        const response = await getAddressOrdinals(address, offset);
-        allUtxos = [...allUtxos, ...response.results];
-        total = response.total;
-        offset += response.results.length;
-      } while (offset < total);
-
-      setUtxos(allUtxos);
+      // Filter out UTXOs without inscriptions
+      const utxosWithInscriptions = newResults.filter(utxo => utxo.inscriptions?.length > 0);
+      
+      if (utxosWithInscriptions.length === 0 && !isInitialLoad) {
+        // If no new inscriptions found and not initial load, try next batch
+        offsetRef.current += newResults.length;
+        setHasMore(offsetRef.current < response.total);
+        loadingRef.current = false;
+        setLoading(false);
+        
+        // Immediately trigger next load if we have more to load
+        if (offsetRef.current < response.total) {
+          loadInscriptions(false);
+        }
+        return;
+      }
+      
+      if (isInitialLoad) {
+        setUtxos(utxosWithInscriptions);
+        // Cache initial results
+        setCachedInscriptions(address, { 
+          utxos: utxosWithInscriptions, 
+          total: response.total 
+        });
+      } else {
+        setUtxos(prev => [...prev, ...utxosWithInscriptions]);
+      }
+      
+      offsetRef.current += newResults.length;
+      console.log('New offset:', offsetRef.current);
+      setHasMore(offsetRef.current < response.total);
       setError(null);
-
-      // Cache the results
-      setCachedInscriptions(address, { utxos: allUtxos, total });
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to load inscriptions';
       setError(message);
-      setUtxos([]);
+      if (isInitialLoad) {
+        setUtxos([]);
+        offsetRef.current = 0;
+      }
       console.error('Failed to load inscriptions:', message);
     }
     
@@ -61,11 +94,19 @@ export const InscriptionsList: React.FC = () => {
 
   useEffect(() => {
     if (error) return;
-    loadInscriptions();
+    loadInscriptions(true);
   }, [loadInscriptions, error]);
+
+  const handleLoadMore = () => {
+    if (!loading && hasMore) {
+      loadInscriptions(false);
+    }
+  };
 
   const handleRetry = () => {
     setError(null);
+    offsetRef.current = 0;
+    setHasMore(true);
   };
 
   const handleBack = () => {
@@ -101,13 +142,26 @@ export const InscriptionsList: React.FC = () => {
         <div className={styles.content}>
           <Title variant="small">Results</Title>
           <div className={styles.listContainer}>
-            {loading ? (
+            {hasInscriptions ? (
+              <>
+                <List 
+                  items={inscriptionsList.map(i => i.text)}
+                  onItemClick={handleInscriptionClick}
+                />
+                <div className={styles.loadMoreContainer}>
+                  {hasMore && (
+                    <Button 
+                      onClick={handleLoadMore} 
+                      className={styles.loadMoreButton}
+                      disabled={loading}
+                    >
+                      {loading ? 'Loading...' : 'Load More'}
+                    </Button>
+                  )}
+                </div>
+              </>
+            ) : loading ? (
               <p>Loading...</p>
-            ) : hasInscriptions ? (
-              <List 
-                items={inscriptionsList.map(i => i.text)}
-                onItemClick={handleInscriptionClick}
-              />
             ) : (
               <p>No inscriptions found for this address.</p>
             )}

@@ -8,12 +8,14 @@ interface ListProps {
   items: string[];
   className?: string;
   onItemClick?: (index: number) => void;
+  onScroll?: (info: { clientHeight: number, scrollHeight: number, scrollTop: number }) => void;
 }
 
 export const List: React.FC<ListProps> = ({
   items,
   className = '',
   onItemClick,
+  onScroll,
 }) => {
   const rowRenderer = ({ key, index, style }: { key: string, index: number, style: React.CSSProperties }) => (
     <div key={key} style={{ ...style, height: '49px', marginBottom: '10px' }}>
@@ -37,6 +39,7 @@ export const List: React.FC<ListProps> = ({
             overscanRowCount={5}
             style={{ outline: 'none' }}
             scrollToAlignment="start"
+            onScroll={onScroll}
           />
         )}
       </AutoSizer>
