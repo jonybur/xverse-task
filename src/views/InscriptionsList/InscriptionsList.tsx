@@ -4,6 +4,7 @@ import { getAddressOrdinals } from '../../services/api';
 import { UTXO } from '../../types/types';
 import { AddressSearch } from '../AddressSearch';
 import { Title, List, Button } from '../../components';
+import { useInscriptions } from '../../context/hooks';
 import styles from './InscriptionsList.module.scss';
 
 export const InscriptionsList: React.FC = () => {
@@ -15,9 +16,17 @@ export const InscriptionsList: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const loadingRef = useRef(false);
+  const { cachedInscriptions, setCachedInscriptions } = useInscriptions();
 
   const loadInscriptions = useCallback(async () => {
     if (!address || loadingRef.current) {
+      return;
+    }
+
+    // Check cache first
+    if (offset === 0 && cachedInscriptions[address]) {
+      setUtxos(cachedInscriptions[address].utxos);
+      setTotal(cachedInscriptions[address].total);
       return;
     }
     
@@ -26,9 +35,15 @@ export const InscriptionsList: React.FC = () => {
     
     try {
       const response = await getAddressOrdinals(address, offset);
-      setUtxos(prev => offset === 0 ? response.results : [...prev, ...response.results]);
+      const newUtxos = offset === 0 ? response.results : [...utxos, ...response.results];
+      setUtxos(newUtxos);
       setTotal(response.total);
       setError(null);
+
+      // Cache only the initial load
+      if (offset === 0) {
+        setCachedInscriptions(address, { utxos: newUtxos, total: response.total });
+      }
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to load inscriptions';
       setError(message);
@@ -39,7 +54,7 @@ export const InscriptionsList: React.FC = () => {
     
     setLoading(false);
     loadingRef.current = false;
-  }, [address, offset]);
+  }, [address, offset, cachedInscriptions, setCachedInscriptions, utxos]);
 
   useEffect(() => {
     if (error) return;

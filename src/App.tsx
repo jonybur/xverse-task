@@ -2,7 +2,9 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AddressSearch, InscriptionsList, InscriptionDetails } from './views';
 import { Navbar } from './components';
+import { InscriptionsProvider } from './context/InscriptionsContext';
 import styles from './App.module.scss';
+
 const AppContent: React.FC = () => {
   const location = useLocation();
   const showBackButton = location.pathname.startsWith('/inscription/');
@@ -26,7 +28,9 @@ const AppContent: React.FC = () => {
 const App: React.FC = () => {
   return (
     <Router>
-      <AppContent />
+      <InscriptionsProvider>
+        <AppContent />
+      </InscriptionsProvider>
     </Router>
   );
 };

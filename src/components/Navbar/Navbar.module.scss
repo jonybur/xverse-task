@@ -7,17 +7,13 @@
   justify-content: center;
 }
 
-.backButton {
+.backIcon {
   width: 28px;
   height: 28px;
   position: absolute;
   top: 48px;
   left: 16px;
-  background: url('../assets/back.svg') no-repeat center;
-  border: none;
   cursor: pointer;
-  padding: 0;
-  opacity: 0;
   transition: opacity 0.2s ease-in-out;
 
   &:hover {

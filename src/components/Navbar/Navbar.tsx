@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import backIcon from '../../assets/back.svg';
 import styles from './Navbar.module.scss';
 
 interface NavbarProps {
@@ -17,7 +18,12 @@ export const Navbar: React.FC<NavbarProps> = ({ title, showBackButton }) => {
   return (
     <nav className={styles.navbar}>
       {showBackButton && (
-        <button className={styles.backButton} onClick={handleBack} />
+        <img 
+          src={backIcon} 
+          className={styles.backIcon} 
+          onClick={handleBack}
+          alt="back"
+        />
       )}
       {title && <h1 className={styles.title}>{title}</h1>}
     </nav>
