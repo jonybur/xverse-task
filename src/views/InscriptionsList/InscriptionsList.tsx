@@ -98,16 +98,6 @@ export const InscriptionsList: React.FC = () => {
     }
   };
 
-  const handleRetry = () => {
-    setError(null);
-    offsetRef.current = 0;
-    setHasMore(true);
-  };
-
-  const handleBack = () => {
-    navigate('/');
-  };
-
   const handleInscriptionClick = (index: number) => {
     const inscription = inscriptionsList[index];
     navigate(`/inscription/${address}/${inscription.id}`);
