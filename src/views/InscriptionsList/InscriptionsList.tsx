@@ -36,16 +36,8 @@ export const InscriptionsList: React.FC = () => {
       setLoading(true);
 
       try {
-        console.log('Current offset:', offsetRef.current);
         const response = await getAddressOrdinals(address, offsetRef.current);
         const newResults = response.results;
-        console.log('Response:', {
-          total: response.total,
-          resultsLength: newResults.length,
-          results: newResults,
-          utxosWithInscriptions: newResults.filter(utxo => utxo.inscriptions?.length > 0).length,
-        });
-
         const utxosWithInscriptions = newResults.filter(utxo => utxo.inscriptions?.length > 0);
 
         if (utxosWithInscriptions.length === 0 && !isInitialLoad) {
@@ -71,7 +63,6 @@ export const InscriptionsList: React.FC = () => {
         }
 
         offsetRef.current += newResults.length;
-        console.log('New offset:', offsetRef.current);
         setHasMore(offsetRef.current < response.total);
         setError(null);
       } catch (error) {
@@ -81,7 +72,6 @@ export const InscriptionsList: React.FC = () => {
           setUtxos([]);
           offsetRef.current = 0;
         }
-        console.error('Failed to load inscriptions:', message);
       }
 
       setLoading(false);
