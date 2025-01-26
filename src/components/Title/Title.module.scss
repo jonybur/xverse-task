@@ -1,0 +1,40 @@
+.root {
+  font-family: Montserrat;
+  text-align: left;
+  text-underline-position: from-font;
+  text-decoration-skip-ink: none;
+
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 22px;
+  letter-spacing: 0.02em;
+  position: relative;
+  padding-bottom: 8px;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #24252C;
+  }
+}
+
+.subtitle {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 22px;
+  letter-spacing: 0.02em;
+}
+
+.small {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 17.07px;
+  padding-left: 21px;
+} 

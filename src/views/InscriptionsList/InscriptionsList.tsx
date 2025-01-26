@@ -1,8 +1,10 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { getAddressOrdinals } from '../../services/api';
 import { UTXO } from '../../types/types';
 import { AddressSearch } from '../AddressSearch';
+import { Title, List, Button } from '../../components';
+import styles from './InscriptionsList.module.scss';
 
 export const InscriptionsList: React.FC = () => {
   const { address } = useParams<{ address: string }>();
@@ -15,10 +17,13 @@ export const InscriptionsList: React.FC = () => {
   const loadingRef = useRef(false);
 
   const loadInscriptions = useCallback(async () => {
-    if (!address || loadingRef.current) return;
+    if (!address || loadingRef.current) {
+      return;
+    }
     
     loadingRef.current = true;
     setLoading(true);
+    
     try {
       const response = await getAddressOrdinals(address, offset);
       setUtxos(prev => offset === 0 ? response.results : [...prev, ...response.results]);
@@ -29,7 +34,9 @@ export const InscriptionsList: React.FC = () => {
       setError(message);
       setUtxos([]);
       setTotal(0);
+      console.error('Failed to load inscriptions:', message);
     }
+    
     setLoading(false);
     loadingRef.current = false;
   }, [address, offset]);
@@ -40,7 +47,9 @@ export const InscriptionsList: React.FC = () => {
   }, [loadInscriptions, error]);
 
   const handleLoadMore = () => {
-    setOffset(prev => prev + 30);
+    if (!loading) {
+      setOffset(prev => prev + 30);
+    }
   };
 
   const handleRetry = () => {
@@ -52,12 +61,24 @@ export const InscriptionsList: React.FC = () => {
     navigate('/');
   };
 
+  const handleInscriptionClick = (index: number) => {
+    const inscription = inscriptionsList[index];
+    navigate(`/inscription/${address}/${inscription.id}`);
+  };
+
+  // Flatten UTXO inscriptions into a single list
+  const inscriptionsList = utxos.flatMap(utxo => 
+    utxo.inscriptions.map(inscription => ({
+      id: inscription.id,
+      text: `Inscription ${inscription.id.slice(0, 8)}`
+    }))
+  );
+
+  const canLoadMore = !loading && utxos.length < total;
+
   return (
     <div>
-      <div style={{ marginBottom: '2rem' }}>
-        <AddressSearch />
-      </div>
-      
+      <AddressSearch />
       {error ? (
         <div>
           <h2>Error</h2>
@@ -67,20 +88,15 @@ export const InscriptionsList: React.FC = () => {
         </div>
       ) : (
         <>
-          <h2>Results</h2>
-          <div>
-            {utxos.map(utxo => (
-              utxo.inscriptions.map(inscription => (
-                <div key={inscription.id}>
-                  <Link to={`/inscription/${address}/${inscription.id}`}>
-                    <p>Inscription {inscription.id}</p>
-                  </Link>
-                </div>
-              ))
-            ))}
-          </div>
-          {utxos.length < total && !loading && (
-            <button onClick={handleLoadMore}>Load More</button>
+          <Title variant="small">Results</Title>
+          <List 
+            items={inscriptionsList.map(i => i.text)}
+            onItemClick={handleInscriptionClick}
+          />
+          {canLoadMore && (
+            <Button onClick={handleLoadMore} className={styles.loadMoreButton}>
+              Load More
+            </Button>
           )}
           {loading && <p>Loading...</p>}
         </>
