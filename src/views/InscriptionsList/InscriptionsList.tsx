@@ -3,15 +3,13 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { getAddressOrdinals } from '../../services/api';
 import { UTXO } from '../../types/types';
 import { AddressSearch } from '../AddressSearch';
-import { Title, List, Button } from '../../components';
+import { Title, List } from '../../components';
 import { useInscriptions } from '../../context/hooks';
 import styles from './InscriptionsList.module.scss';
 
 export const InscriptionsList: React.FC = () => {
   const { address } = useParams<{ address: string }>();
   const [utxos, setUtxos] = useState<UTXO[]>([]);
-  const [offset, setOffset] = useState(0);
-  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -24,9 +22,8 @@ export const InscriptionsList: React.FC = () => {
     }
 
     // Check cache first
-    if (offset === 0 && cachedInscriptions[address]) {
+    if (cachedInscriptions[address]) {
       setUtxos(cachedInscriptions[address].utxos);
-      setTotal(cachedInscriptions[address].total);
       return;
     }
     
@@ -34,42 +31,41 @@ export const InscriptionsList: React.FC = () => {
     setLoading(true);
     
     try {
-      const response = await getAddressOrdinals(address, offset);
-      const newUtxos = offset === 0 ? response.results : [...utxos, ...response.results];
-      setUtxos(newUtxos);
-      setTotal(response.total);
+      // Load all UTXOs recursively
+      let allUtxos: UTXO[] = [];
+      let offset = 0;
+      let total = 0;
+      
+      do {
+        const response = await getAddressOrdinals(address, offset);
+        allUtxos = [...allUtxos, ...response.results];
+        total = response.total;
+        offset += response.results.length;
+      } while (offset < total);
+
+      setUtxos(allUtxos);
       setError(null);
 
-      // Cache only the initial load
-      if (offset === 0) {
-        setCachedInscriptions(address, { utxos: newUtxos, total: response.total });
-      }
+      // Cache the results
+      setCachedInscriptions(address, { utxos: allUtxos, total });
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to load inscriptions';
       setError(message);
       setUtxos([]);
-      setTotal(0);
       console.error('Failed to load inscriptions:', message);
     }
     
     setLoading(false);
     loadingRef.current = false;
-  }, [address, offset, cachedInscriptions, setCachedInscriptions, utxos]);
+  }, [address, cachedInscriptions, setCachedInscriptions]);
 
   useEffect(() => {
     if (error) return;
     loadInscriptions();
   }, [loadInscriptions, error]);
 
-  const handleLoadMore = () => {
-    if (!loading) {
-      setOffset(prev => prev + 30);
-    }
-  };
-
   const handleRetry = () => {
     setError(null);
-    setOffset(0);
   };
 
   const handleBack = () => {
@@ -83,16 +79,16 @@ export const InscriptionsList: React.FC = () => {
 
   // Flatten UTXO inscriptions into a single list
   const inscriptionsList = utxos.flatMap(utxo => 
-    utxo.inscriptions.map(inscription => ({
+    (utxo.inscriptions || []).map(inscription => ({
       id: inscription.id,
       text: `Inscription ${inscription.id.slice(0, 8)}`
     }))
   );
 
-  const canLoadMore = !loading && utxos.length < total;
+  const hasInscriptions = inscriptionsList.length > 0;
 
   return (
-    <div>
+    <div className={styles.container}>
       <AddressSearch />
       {error ? (
         <div>
@@ -102,19 +98,21 @@ export const InscriptionsList: React.FC = () => {
           <button onClick={handleBack}>Back to Search</button>
         </div>
       ) : (
-        <>
+        <div className={styles.content}>
           <Title variant="small">Results</Title>
-          <List 
-            items={inscriptionsList.map(i => i.text)}
-            onItemClick={handleInscriptionClick}
-          />
-          {canLoadMore && (
-            <Button onClick={handleLoadMore} className={styles.loadMoreButton}>
-              Load More
-            </Button>
-          )}
-          {loading && <p>Loading...</p>}
-        </>
+          <div className={styles.listContainer}>
+            {loading ? (
+              <p>Loading...</p>
+            ) : hasInscriptions ? (
+              <List 
+                items={inscriptionsList.map(i => i.text)}
+                onItemClick={handleInscriptionClick}
+              />
+            ) : (
+              <p>No inscriptions found for this address.</p>
+            )}
+          </div>
+        </div>
       )}
     </div>
   );
